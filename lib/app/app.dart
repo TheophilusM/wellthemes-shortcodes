@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'theme.dart';
 import 'router.dart';
+import 'theme.dart';
 
-class WellthApp extends StatelessWidget {
+class WellthApp extends ConsumerWidget {
   const WellthApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return ProviderScope(
-      child: MaterialApp.router(
-        title: 'Wellth',
-        debugShowCheckedModeBanner: false,
-        theme: buildWellthTheme(),
-        routerConfig: appRouter,
-      ),
+  Widget build(BuildContext context, WidgetRef ref) {
+    final router = ref.watch(routerProvider);
+
+    return MaterialApp.router(
+      title: 'Wellth',
+      debugShowCheckedModeBanner: false,
+      theme: buildWellthTheme(), // you already created this
+      routerConfig: router,
     );
   }
 }

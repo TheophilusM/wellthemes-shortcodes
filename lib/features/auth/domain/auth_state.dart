@@ -26,6 +26,6 @@ class AuthState {
   static const initial = AuthState(
     status: AuthStatus.unknown,
     isFirstLaunch: true,
-    isProfileComplete: false,
+    isProfileComplete: true,
   );
 }

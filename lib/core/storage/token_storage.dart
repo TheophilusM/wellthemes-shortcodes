@@ -14,7 +14,7 @@ class TokenStorage {
   String? _cachedAccessToken;
   String? _cachedRefreshToken;
 
-  // --- FIRST LAUNCH ---
+  // ---------- FIRST LAUNCH ----------
 
   Future<bool> isFirstLaunch() async {
     final prefs = await SharedPreferences.getInstance();
@@ -26,7 +26,7 @@ class TokenStorage {
     await prefs.setBool(_keyFirstLaunch, true);
   }
 
-  // --- TOKENS ---
+  // ---------- TOKENS ----------
 
   Future<void> saveTokens({
     required String accessToken,
