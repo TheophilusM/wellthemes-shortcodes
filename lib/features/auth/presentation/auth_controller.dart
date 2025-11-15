@@ -8,7 +8,6 @@ import '../../auth/data/auth_api.dart';
 import '../../auth/data/auth_models.dart';
 import '../../../core/storage/token_storage_provider.dart';
 import '../../../core/storage/token_storage.dart';
-import '../../../core/network/logout_callback_provider.dart';
 
 enum LoginOutcome { success, requiresMfa }
 
@@ -19,11 +18,8 @@ final authControllerProvider = StateNotifierProvider<AuthController, AuthState>(
 
     final controller = AuthController(tokenStorage, authApi);
 
-    // Register logout callback for the network layer (refresh failure, etc.)
-    ref.read(logoutCallbackProvider.notifier).state =
-        controller.logoutFromNetwork;
-
     controller.init();
+
     return controller;
   },
 );
@@ -35,6 +31,7 @@ class AuthController extends StateNotifier<AuthState> {
   final AuthApi _authApi;
 
   final _streamController = StreamController<AuthState>.broadcast();
+  @override
   Stream<AuthState> get stream => _streamController.stream;
 
   // ---------- STARTUP ----------

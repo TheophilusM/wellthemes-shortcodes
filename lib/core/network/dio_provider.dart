@@ -5,7 +5,7 @@ import 'package:wellth_app/core/config/app_environment.dart';
 import 'package:wellth_app/core/storage/token_storage.dart';
 import 'package:wellth_app/core/storage/token_storage_provider.dart';
 import 'package:wellth_app/core/utils/device_info_provider.dart';
-import 'package:wellth_app/core/network/logout_callback_provider.dart';
+import 'package:wellth_app/features/auth/presentation/auth_controller.dart';
 
 final dioProvider = Provider<Dio>((ref) {
   final tokenStorage = ref.watch(tokenStorageProvider);
@@ -148,10 +148,11 @@ Future<Response<dynamic>?> _refreshTokenAndRetry({
 }
 
 Future<void> _performLogout(Ref ref, TokenStorage tokenStorage) async {
-  final callback = ref.read(logoutCallbackProvider);
-  if (callback != null) {
-    await callback();
-  } else {
+  try {
+    // Ask AuthController to handle full logout (clears tokens + updates state)
+    await ref.read(authControllerProvider.notifier).logoutFromNetwork();
+  } catch (_) {
+    // Fallback: if something goes wrong, at least clear tokens
     await tokenStorage.clear();
   }
 }

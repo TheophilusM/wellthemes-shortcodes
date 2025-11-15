@@ -125,7 +125,7 @@ final routerProvider = Provider<GoRouter>((ref) {
 });
 
 class _SplashScreen extends StatelessWidget {
-  const _SplashScreen({super.key});
+  const _SplashScreen();
 
   @override
   Widget build(BuildContext context) {
