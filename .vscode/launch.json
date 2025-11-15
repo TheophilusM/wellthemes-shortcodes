@@ -1,0 +1,17 @@
+{
+  "version": "1.0.0",
+  "configurations": [
+    {
+      "name": "Wellth Dev",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main_dev.dart"
+    },
+    {
+      "name": "Wellth Prod",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main_prod.dart"
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+// lib/core/storage/token_storage_provider.dart
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'token_storage.dart';
+
+final tokenStorageProvider = Provider<TokenStorage>((ref) {
+  return TokenStorage();
+});
