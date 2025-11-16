@@ -1,4 +1,5 @@
 // lib/features/auth/screens/forgot_password_screen.dart
+import 'package:Wellth/core/utils/validators.dart';
 import 'package:Wellth/features/auth/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

@@ -1,9 +1,9 @@
 // lib/features/onboarding/onboarding_screen.dart
+import 'package:Wellth/features/auth/controllers/auth_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../app/theme/colors.dart';
-import '../../core/services/storage_service.dart';
 
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
@@ -305,6 +305,6 @@ class OnboardingPage {
 }
 
 // Provider for StorageService
-final storageServiceProvider = Provider<StorageService>((ref) {
-  return StorageService();
-});
+// final storageServiceProvider = Provider<StorageService>((ref) {
+//   throw UnimplementedError('StorageService must be initialized in main.dart');
+// });

@@ -18,6 +18,7 @@ class LoadingOverlay extends StatelessWidget {
     return Stack(
       children: [
         child,
+
         if (isLoading)
           Container(
             color: Colors.black54,
