@@ -1,135 +1,230 @@
-import 'dart:async';
-
+// lib/app/router.dart
+import 'package:Wellth/features/onboarding/onboarding_screen.dart';
+import 'package:Wellth/features/splash/splash_screen.dart';
+import 'package:Wellth/features/user/screens/profile_complete_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:wellth_app/features/auth/domain/auth_state.dart';
-import 'package:wellth_app/features/auth/presentation/auth_controller.dart';
-import 'package:wellth_app/features/auth/presentation/complete_profile_screen.dart';
-import 'package:wellth_app/features/auth/presentation/home_screen.dart';
-import 'package:wellth_app/features/auth/presentation/login_screen.dart';
-import 'package:wellth_app/features/auth/presentation/signup_screen.dart';
-import 'package:wellth_app/features/auth/presentation/onboarding_screen.dart';
-import 'package:wellth_app/features/auth/presentation/mfa_screen.dart';
-
-/// Listenable that rebuilds GoRouter when an auth stream emits a new value.
-/// This is the same pattern used in the official go_router + Riverpod examples.
-class GoRouterRefreshStream extends ChangeNotifier {
-  GoRouterRefreshStream(Stream<dynamic> stream) {
-    _subscription = stream.listen((_) {
-      notifyListeners();
-    });
-  }
-
-  late final StreamSubscription<dynamic> _subscription;
-
-  @override
-  void dispose() {
-    _subscription.cancel();
-    super.dispose();
-  }
-}
+import '../features/auth/screens/login_screen.dart';
+import '../features/auth/screens/signup_screen.dart';
+import '../features/auth/screens/role_selection_screen.dart';
+import '../features/auth/screens/forgot_password_screen.dart';
+import '../features/home/home_screen.dart';
+import '../features/auth/controllers/auth_controller.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authControllerProvider);
-  final authNotifier = ref.read(authControllerProvider.notifier);
 
   return GoRouter(
     initialLocation: '/splash',
     debugLogDiagnostics: true,
-    // When authController emits on its stream, this notifies GoRouter to re-run redirect
-    refreshListenable: GoRouterRefreshStream(authNotifier.stream),
     redirect: (context, state) {
-      final loc = state.matchedLocation;
-      final isSplash = loc == '/splash';
-      final isOnboarding = loc.startsWith('/onboarding');
-      final isAuthRoute = loc.startsWith('/auth');
+      final isAuthenticated = authState.isAuthenticated;
+      final isOnboarded = authState.user?.isOnboarded ?? false;
+      final currentPath = state.matchedLocation;
 
-      final status = authState.status;
-      final loggedIn = status == AuthStatus.authenticated;
-      final firstLaunch = authState.isFirstLaunch;
-      final profileComplete = authState.isProfileComplete;
+      // Public routes that don't need auth
+      const publicRoutes = [
+        '/splash',
+        '/onboarding',
+        '/auth/login',
+        '/auth/signup',
+        '/auth/role',
+        '/auth/forgot-password',
+        '/auth/reset-password',
+        '/auth/verify-email',
+        '/auth/mfa',
+      ];
 
-      // 1. While still figuring out first-launch / tokens
-      if (status == AuthStatus.unknown) {
-        return isSplash ? null : '/splash';
-      }
-
-      // 2. First-ever launch → onboarding
-      if (firstLaunch && !loggedIn && !isOnboarding && !isAuthRoute) {
-        return '/onboarding';
-      }
-
-      final isPublicRoute =
-          isSplash || isOnboarding || isAuthRoute || loc == '/';
-
-      // 3. Not logged in & trying to hit a private route
-      if (!loggedIn && !isPublicRoute) {
-        final from = Uri.encodeComponent(loc);
-        return '/auth/login?from=$from';
-      }
-
-      // 4. Logged in but lingering on splash / onboarding / auth
-      if (loggedIn && (isSplash || isOnboarding || isAuthRoute)) {
-        if (!profileComplete) {
-          return '/profile/complete';
+      // If on a public route and authenticated, redirect to home
+      if (publicRoutes.any((route) => currentPath.startsWith(route))) {
+        if (isAuthenticated) {
+          // Check if profile is complete
+          if (!isOnboarded) {
+            return '/profile/complete';
+          }
+          return '/home';
         }
-        return '/home';
+        // Not authenticated, stay on public route
+        return null;
       }
 
-      // 5. No redirect needed
+      // Private routes - require authentication
+      if (!isAuthenticated) {
+        // Save the intended destination
+        return '/auth/login?from=$currentPath';
+      }
+
+      // Check if profile is complete for authenticated users
+      if (!isOnboarded && currentPath != '/profile/complete') {
+        return '/profile/complete';
+      }
+
+      // Allow navigation
       return null;
     },
     routes: [
+      // Splash
       GoRoute(
         path: '/splash',
         name: 'splash',
-        builder: (context, state) => const _SplashScreen(),
+        pageBuilder: (context, state) =>
+            NoTransitionPage(key: state.pageKey, child: const SplashScreen()),
       ),
+
+      // Onboarding
       GoRoute(
         path: '/onboarding',
         name: 'onboarding',
-        builder: (context, state) => const OnboardingScreen(),
+        pageBuilder: (context, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: const OnboardingScreen(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(opacity: animation, child: child);
+          },
+        ),
       ),
+
+      // Auth Routes
       GoRoute(
         path: '/auth/login',
         name: 'login',
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final from = state.uri.queryParameters['from'];
-          return LoginScreen(redirectTo: from);
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: LoginScreen(redirectTo: from),
+            transitionsBuilder: _slideTransition,
+          );
         },
       ),
+
       GoRoute(
         path: '/auth/signup',
         name: 'signup',
-        builder: (context, state) => const SignupScreen(),
+        pageBuilder: (context, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: const SignUpScreen(),
+          transitionsBuilder: _slideTransition,
+        ),
       ),
+
+      GoRoute(
+        path: '/auth/role',
+        name: 'role-selection',
+        pageBuilder: (context, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: const RoleSelectionScreen(),
+          transitionsBuilder: _slideTransition,
+        ),
+      ),
+
+      GoRoute(
+        path: '/auth/forgot-password',
+        name: 'forgot-password',
+        pageBuilder: (context, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: const ForgotPasswordScreen(),
+          transitionsBuilder: _slideTransition,
+        ),
+      ),
+
+      GoRoute(
+        path: '/auth/reset-password',
+        name: 'reset-password',
+        pageBuilder: (context, state) {
+          final token = state.uri.queryParameters['token'] ?? '';
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: ResetPasswordScreen(token: token),
+            transitionsBuilder: _slideTransition,
+          );
+        },
+      ),
+
+      GoRoute(
+        path: '/auth/verify-email',
+        name: 'verify-email',
+        pageBuilder: (context, state) {
+          final token = state.uri.queryParameters['token'];
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: VerifyEmailScreen(token: token),
+            transitionsBuilder: _slideTransition,
+          );
+        },
+      ),
+
       GoRoute(
         path: '/auth/mfa',
         name: 'mfa',
-        builder: (context, state) => const MfaScreen(),
+        pageBuilder: (context, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: const MfaScreen(),
+          transitionsBuilder: _slideTransition,
+        ),
       ),
-      GoRoute(
-        path: '/profile/complete',
-        name: 'profile_complete',
-        builder: (context, state) => const CompleteProfileScreen(),
-      ),
+
+      // Home (Private)
       GoRoute(
         path: '/home',
         name: 'home',
-        builder: (context, state) => const HomeScreen(),
+        pageBuilder: (context, state) =>
+            NoTransitionPage(key: state.pageKey, child: const HomeScreen()),
+      ),
+
+      // Profile Complete (Private)
+      GoRoute(
+        path: '/profile/complete',
+        name: 'profile-complete',
+        pageBuilder: (context, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: const ProfileCompleteScreen(),
+          transitionsBuilder: _slideTransition,
+        ),
       ),
     ],
+    errorBuilder: (context, state) => Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline, size: 80, color: Colors.red),
+            const SizedBox(height: 16),
+            Text(
+              'Page not found',
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              state.matchedLocation,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: () => context.go('/home'),
+              child: const Text('Go Home'),
+            ),
+          ],
+        ),
+      ),
+    ),
   );
 });
 
-class _SplashScreen extends StatelessWidget {
-  const _SplashScreen();
+// Custom slide transition from right
+Widget _slideTransition(
+  BuildContext context,
+  Animation<double> animation,
+  Animation<double> secondaryAnimation,
+  Widget child,
+) {
+  const begin = Offset(1.0, 0.0);
+  const end = Offset.zero;
+  const curve = Curves.easeInOut;
 
-  @override
-  Widget build(BuildContext context) {
-    // Later: replace this with your Figma splash (logo, gradient, etc.)
-    return const Scaffold(body: Center(child: CircularProgressIndicator()));
-  }
+  var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+  return SlideTransition(position: animation.drive(tween), child: child);
 }
