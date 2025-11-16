@@ -14,7 +14,7 @@ class WellthApp extends ConsumerWidget {
     return MaterialApp.router(
       title: 'Wellth',
       debugShowCheckedModeBanner: false,
-      theme: buildWellthTheme(), // you already created this
+      theme: buildWellthTheme(),
       routerConfig: router,
     );
   }

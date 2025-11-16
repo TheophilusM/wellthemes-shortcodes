@@ -8,7 +8,7 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
   AppEnvironment.init(
-    baseUrl: 'http://localhost:4000//api/v1', // your dev URL
+    baseUrl: 'http://localhost:4000/api/v1',
     environment: Environment.dev,
   );
 
