@@ -214,7 +214,7 @@ Widget _buildActionButtons(BuildContext context) {
           width: double.infinity,
           height: 50,
           child: OutlinedButton(
-            onPressed: () => context.go('/auth/signin'),
+            onPressed: () => context.go('/auth/login'),
             style: OutlinedButton.styleFrom(
               side: BorderSide(color: colorScheme.primary, width: 1.5),
               foregroundColor: colorScheme.primary,
