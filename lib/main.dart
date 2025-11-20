@@ -4,71 +4,63 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'app/app.dart';
 import 'core/services/storage_service.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+// void main() async {
+//   WidgetsFlutterBinding.ensureInitialized();
+//
+//   final storageService = StorageService();
+//   await storageService.init();
+//
+//   runApp(
+//     ProviderScope(
+//       overrides: [
+//         storageServiceProvider.overrideWithValue(storageService),
+//       ],
+//       child: const WellthApp(),
+//     ),
+//   );
+// }
 
-  // Initialize StorageService before running app
-  final storageService = StorageService();
-  await storageService.init();
-
-  runApp(
-    ProviderScope(
-      overrides: [
-        // Override the storage service provider with initialized instance
-        storageServiceProvider.overrideWithValue(storageService),
-      ],
-      child: const WellthApp(),
-    ),
-  );
+void main() {
+  runApp(const MyApp());
 }
 
-// Alternative: If you prefer async provider initialization
-// Here's another approach using FutureProvider
-
-final storageInitProvider = FutureProvider<StorageService>((ref) async {
-  final storage = StorageService();
-  await storage.init();
-  return storage;
-});
-
-// Initialization Wrapper Widget (if you want to show loading during init)
-class AppInitializer extends ConsumerWidget {
-  final Widget child;
-
-  const AppInitializer({super.key, required this.child});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final storageAsync = ref.watch(storageInitProvider);
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
+        useMaterial3: true,
+      ),
+      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+    );
+  }
+}
 
-    return storageAsync.when(
-      data: (_) => child,
-      loading: () => const MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: Scaffold(body: Center(child: CircularProgressIndicator())),
-      ),
-      error: (error, stack) => MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: Scaffold(
-          body: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.error, size: 64, color: Colors.red),
-                const SizedBox(height: 16),
-                Text('Initialization Error: $error'),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () {
-                    // Restart app
-                  },
-                  child: const Text('Retry'),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key, required this.title});
+  final String title;
+
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  int _counter = 0; // 👈 The State (data that changes)
+
+  void _incrementCounter() { // 👈 The Logic (how state changes)
+    setState(() {
+      _counter++;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      floatingActionButton: FloatingActionButton(onPressed: () { _incrementCounter();  } ),
     );
   }
 }

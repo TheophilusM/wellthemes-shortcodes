@@ -1,13 +1,15 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import '../../../core/services/auth_service.dart';
+
 import '../../../core/services/api_service.dart';
-import '../../../core/services/storage_service.dart';
+import '../../../core/services/auth_service.dart';
 import '../../../core/services/device_info_service.dart';
+import '../../../core/services/storage_service.dart';
 import 'auth_state.dart';
 
 final authControllerProvider = StateNotifierProvider<AuthController, AuthState>(
-  (ref) {
+      (ref) {
     return AuthController(ref);
   },
 );
@@ -16,7 +18,10 @@ class AuthController extends StateNotifier<AuthState> {
   final Ref _ref;
   late final AuthService _authService;
   late final StorageService _storageService;
-  final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email', 'profile']);
+
+  // V7: Use GoogleSignIn.instance singleton
+  final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
+  bool _isGoogleSignInInitialized = false;
 
   AuthController(this._ref) : super(const AuthState()) {
     _storageService = _ref.read(storageServiceProvider);
@@ -24,7 +29,29 @@ class AuthController extends StateNotifier<AuthState> {
     final apiService = ApiService(_storageService, deviceInfoService);
     _authService = AuthService(apiService, _storageService);
 
-    _checkAuthStatus();
+    _initializeServices();
+  }
+
+  Future<void> _initializeServices() async {
+    await _initializeGoogleSignIn();
+    await _checkAuthStatus();
+  }
+
+  // V7: Async initialization required
+  Future<void> _initializeGoogleSignIn() async {
+    try {
+      await _googleSignIn.initialize();
+      _isGoogleSignInInitialized = true;
+    } catch (e) {
+      print('Failed to initialize Google Sign-In: $e');
+    }
+  }
+
+  // V7: Helper to ensure initialization before use
+  Future<void> _ensureGoogleSignInInitialized() async {
+    if (!_isGoogleSignInInitialized) {
+      await _initializeGoogleSignIn();
+    }
   }
 
   // Check authentication status on app start
@@ -37,7 +64,6 @@ class AuthController extends StateNotifier<AuthState> {
         state = AuthState(isAuthenticated: true, user: user);
       }
     } catch (e) {
-      // If token validation fails, clear tokens
       await _authService.logout();
       state = const AuthState();
     }
@@ -67,8 +93,6 @@ class AuthController extends StateNotifier<AuthState> {
         password: password,
         referralCode: referralCode,
       );
-
-      // Registration successful - email verification required
       state = state.copyWith(isLoading: false);
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
@@ -91,10 +115,8 @@ class AuthController extends StateNotifier<AuthState> {
       );
 
       if (response.requiresMfa) {
-        // MFA required
         state = state.copyWith(isLoading: false, requiresMfa: true);
       } else if (response.hasTokens) {
-        // Login successful - fetch user profile
         final user = await _authService.getCurrentUser();
         state = AuthState(isAuthenticated: true, user: user, isLoading: false);
       }
@@ -103,22 +125,27 @@ class AuthController extends StateNotifier<AuthState> {
     }
   }
 
-  // Sign in with Google
+  // V7: Sign in with Google - completely rewritten
   Future<void> signInWithGoogle({bool rememberMe = true}) async {
     state = state.copyWith(isLoading: true, clearError: true);
 
     try {
-      // Initiate Google Sign In
-      final googleUser = await _googleSignIn.signIn();
+      // Ensure GoogleSignIn is initialized
+      await _ensureGoogleSignInInitialized();
 
-      if (googleUser == null) {
-        // User cancelled the sign-in
-        state = state.copyWith(isLoading: false);
-        return;
+      // V7: Check if authenticate() is supported on this platform
+      if (!_googleSignIn.supportsAuthenticate()) {
+        throw Exception('Google Sign-In not supported on this platform');
       }
 
-      // Get authentication
-      final googleAuth = await googleUser.authentication;
+      // V7: Use authenticate() instead of signIn()
+      // authenticate() throws exceptions instead of returning null
+      final GoogleSignInAccount googleUser = await _googleSignIn.authenticate(
+        scopeHint: ['email', 'profile'],
+      );
+
+      // V7: authentication is now synchronous (no await needed)
+      final googleAuth = googleUser.authentication;
       final idToken = googleAuth.idToken;
 
       if (idToken == null) {
@@ -137,8 +164,32 @@ class AuthController extends StateNotifier<AuthState> {
         final user = await _authService.getCurrentUser();
         state = AuthState(isAuthenticated: true, user: user, isLoading: false);
       }
+    } on GoogleSignInException catch (e) {
+      // V7: Handle new exception types
+      final errorMessage = _getGoogleSignInErrorMessage(e);
+      state = state.copyWith(isLoading: false, error: errorMessage);
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
+    }
+  }
+
+  // V7: Helper to convert GoogleSignInException to user-friendly messages
+  String _getGoogleSignInErrorMessage(GoogleSignInException e) {
+    switch (e.code.name) {
+      case 'canceled':
+        return 'Sign-in was cancelled';
+      case 'interrupted':
+        return 'Sign-in was interrupted. Please try again.';
+      case 'clientConfigurationError':
+        return 'Configuration issue with Google Sign-In';
+      case 'providerConfigurationError':
+        return 'Google Sign-In is currently unavailable';
+      case 'uiUnavailable':
+        return 'Google Sign-In UI is unavailable';
+      case 'userMismatch':
+        return 'Account mismatch. Please sign out and try again.';
+      default:
+        return 'Google Sign-In failed: ${e.description ?? e.code.name}';
     }
   }
 
@@ -223,6 +274,7 @@ class AuthController extends StateNotifier<AuthState> {
   // Logout
   Future<void> logout() async {
     try {
+      await _ensureGoogleSignInInitialized();
       await _googleSignIn.signOut();
     } catch (e) {
       // Ignore Google sign out errors
@@ -239,7 +291,6 @@ class AuthController extends StateNotifier<AuthState> {
 }
 
 // Provider exports
-// Storage service will be initialized in main.dart and overridden
 final storageServiceProvider = Provider<StorageService>((ref) {
   throw UnimplementedError('StorageService must be initialized in main.dart');
 });
