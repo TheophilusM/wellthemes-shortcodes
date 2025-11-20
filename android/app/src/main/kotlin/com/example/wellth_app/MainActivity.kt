@@ -1,4 +1,4 @@
-package com.example.wellth_app
+package com.example.wellth
 
 import io.flutter.embedding.android.FlutterActivity
 

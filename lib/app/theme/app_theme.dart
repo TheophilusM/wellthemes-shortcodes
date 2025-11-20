@@ -1,5 +1,5 @@
 // lib/app/theme/app_theme.dart
-import 'package:Wellth/app/theme/colors.dart';
+import 'package:wellth/app/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 

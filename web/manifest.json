@@ -1,11 +1,11 @@
 {
-    "name": "wellth_app",
-    "short_name": "wellth_app",
+    "name": "Wellth",
+    "short_name": "Wellth",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Wellth App, Heath Care Services Platform",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

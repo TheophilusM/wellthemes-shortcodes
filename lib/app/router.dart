@@ -1,7 +1,7 @@
 // lib/app/router.dart
-import 'package:Wellth/features/onboarding/onboarding_screen.dart';
-import 'package:Wellth/features/splash/splash_screen.dart';
-import 'package:Wellth/features/user/screens/profile_complete_screen.dart';
+import 'package:wellth/features/onboarding/onboarding_screen.dart';
+import 'package:wellth/features/splash/splash_screen.dart';
+import 'package:wellth/features/user/screens/profile_complete_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

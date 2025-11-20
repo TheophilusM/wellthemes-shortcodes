@@ -1,15 +1,13 @@
-// lib/features/auth/screens/signup_screen.dart
-import 'package:Wellth/core/utils/validators.dart';
-import 'package:Wellth/features/auth/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:wellth/core/utils/validators.dart';
+
 import '../../../app/theme/colors.dart';
 import '../controllers/auth_controller.dart';
-import '../widgets/auth_text_field.dart';
 import '../widgets/auth_button.dart';
+import '../widgets/auth_text_field.dart';
 import '../widgets/google_sign_in_button.dart';
-import '../../../shared/widgets/loading_overlay.dart';
 
 class SignUpScreen extends ConsumerStatefulWidget {
   const SignUpScreen({super.key});
@@ -126,9 +124,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     final authState = ref.watch(authControllerProvider);
     final theme = Theme.of(context);
 
-    return LoadingOverlay(
-      isLoading: authState.isLoading,
-      child: Scaffold(
+    return Scaffold(
         backgroundColor: theme.scaffoldBackgroundColor,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
@@ -402,8 +398,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
             ),
           ),
         ),
-      ),
-    );
+      );
   }
 
   Widget _buildHeader() {

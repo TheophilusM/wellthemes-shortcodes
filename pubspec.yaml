@@ -1,4 +1,4 @@
-name: Wellth
+name: wellth
 description: "Wellth App, Heath Care Services Platform"
 
 publish_to: "none"
@@ -60,6 +60,6 @@ flutter:
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "lib/assets/icons/app_icon.png"
+  image_path: "lib/assets/icons/app_icon_foreground.png"
   adaptive_icon_background: "#005F8D"
-  # adaptive_icon_foreground: "lib/assets/icons/app_icon_foreground.png"
+  adaptive_icon_foreground: "lib/assets/icons/app_icon_min.png"

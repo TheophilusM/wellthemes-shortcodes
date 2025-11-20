@@ -1,5 +1,5 @@
 // lib/features/onboarding/onboarding_screen.dart
-import 'package:Wellth/features/auth/controllers/auth_controller.dart';
+import 'package:wellth/features/auth/controllers/auth_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';

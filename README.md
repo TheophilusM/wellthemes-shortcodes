@@ -1,4 +1,4 @@
-# wellth_app
+# wellth
 
 A new Flutter project.
 

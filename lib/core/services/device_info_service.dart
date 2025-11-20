@@ -1,7 +1,7 @@
 // lib/core/services/device_info_service.dart
 import 'dart:io';
-import 'package:Wellth/core/constants/storage_keys.dart';
-import 'package:Wellth/core/services/storage_service.dart';
+import 'package:wellth/core/constants/storage_keys.dart';
+import 'package:wellth/core/services/storage_service.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:uuid/uuid.dart';

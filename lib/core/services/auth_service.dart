@@ -1,5 +1,5 @@
 // lib/core/services/auth_service.dart
-import 'package:Wellth/core/constants/app_constants.dart';
+import 'package:wellth/core/constants/app_constants.dart';
 import 'package:dio/dio.dart';
 import '../models/api_response.dart';
 import '../models/user_model.dart';

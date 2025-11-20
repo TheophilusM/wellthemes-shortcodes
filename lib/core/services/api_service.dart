@@ -1,5 +1,5 @@
 // lib/core/services/api_service.dart
-import 'package:Wellth/core/constants/app_constants.dart';
+import 'package:wellth/core/constants/app_constants.dart';
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
 import 'storage_service.dart';

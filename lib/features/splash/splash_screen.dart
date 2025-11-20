@@ -96,27 +96,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-
-              const SizedBox(height: 8),
-
-              // Tagline
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 40),
-                child: Text(
-                  'Connecting care providers with those who need them',
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    color: Colors.white.withOpacity(0.9),
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-
-              const SizedBox(height: 40),
-
-              // Loading Indicator
-              const CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-              ),
             ],
           ),
         ),

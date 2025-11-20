@@ -1,4 +1,4 @@
-import 'package:Wellth/app/theme/colors.dart';
+import 'package:wellth/app/theme/colors.dart';
 import 'package:flutter/material.dart';
 
 class ProfileCompleteScreen extends StatelessWidget {
