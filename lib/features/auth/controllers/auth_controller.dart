@@ -41,6 +41,12 @@ class AuthController extends StateNotifier<AuthState> {
   Future<void> _initializeGoogleSignIn() async {
     try {
       await _googleSignIn.initialize();
+      /*
+      await _googleSignIn.initialize(
+        clientId: 'YOUR_CLIENT_ID',  // Optional
+        serverClientId: 'YOUR_SERVER_CLIENT_ID',  // Optional
+      );
+       */
       _isGoogleSignInInitialized = true;
     } catch (e) {
       print('Failed to initialize Google Sign-In: $e');

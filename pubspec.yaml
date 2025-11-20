@@ -45,6 +45,7 @@ dependencies:
   freezed_annotation: ^3.1.0
   json_annotation: ^4.9.0
   cached_network_image: ^3.4.1
+  flutter_native_splash: ^2.4.7
 
 dev_dependencies:
   flutter_test:
@@ -58,17 +59,18 @@ flutter:
   uses-material-design: true
 
 # >>flutter pub run flutter_launcher_icons
-flutter_launcher_icons:
-  android: true
-  ios: true
-  image_path: "lib/assets/icons/app_icon_foreground.png"
-  adaptive_icon_background: "#005F8D"
-  adaptive_icon_foreground: "lib/assets/icons/app_icon_min.png"
+#flutter_launcher_icons:
+#  android: true
+#  ios: true
+#  image_path: "lib/assets/icons/app_icon_foreground.png"
+#  adaptive_icon_background: "#005F8D"
+#  adaptive_icon_foreground: "lib/assets/icons/app_icon_min.png"
 
-  flutter_native_splash:
-    color: "#005F8D"
-    # background_image: "assets/splash_background.png"
-    image: "lib/assets/icons/app_icon_foreground.png"
-    image_android: "lib/assets/icons/app_icon_foreground.png"
-    image_ios: "lib/assets/icons/app_icon_foreground.png"
-    # android_disable_fullscreen: true
+# >> flutter pub run flutter_native_splash:create
+flutter_native_splash:
+  color: "#005F8D"
+  # background_image: "assets/splash_background.png"
+  image: "lib/assets/icons/app_icon_foreground.png"
+  image_android: "lib/assets/icons/app_icon_foreground.png"
+  image_ios: "lib/assets/icons/app_icon_foreground.png"
+  # android_disable_fullscreen: true
