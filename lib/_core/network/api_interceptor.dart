@@ -1,4 +1,4 @@
-// API Interceptor  
+// API Interceptor
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
 import '../services/token_manager.dart';
@@ -16,9 +16,9 @@ class ApiInterceptor extends Interceptor {
 
   @override
   Future<void> onRequest(
-      RequestOptions options,
-      RequestInterceptorHandler handler,
-      ) async {
+    RequestOptions options,
+    RequestInterceptorHandler handler,
+  ) async {
     try {
       // Add device headers to all requests
       final deviceHeaders = await _deviceInfoService.getDeviceHeaders();
@@ -71,16 +71,20 @@ class ApiInterceptor extends Interceptor {
 
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
-    _logger.d('Response: ${response.statusCode} ${response.requestOptions.path}');
+    _logger.d(
+      'Response: ${response.statusCode} ${response.requestOptions.path}',
+    );
     return handler.next(response);
   }
 
   @override
   Future<void> onError(
-      DioException err,
-      ErrorInterceptorHandler handler,
-      ) async {
-    _logger.e('API Error: ${err.response?.statusCode} ${err.requestOptions.path}');
+    DioException err,
+    ErrorInterceptorHandler handler,
+  ) async {
+    _logger.e(
+      'API Error: ${err.response?.statusCode} ${err.requestOptions.path}',
+    );
 
     // Handle 401 Unauthorized
     if (err.response?.statusCode == 401) {
@@ -138,13 +142,12 @@ class ApiInterceptor extends Interceptor {
       }
 
       // Create separate Dio instance to avoid recursion
-      final dio = Dio(BaseOptions(
-        baseUrl: _dio.options.baseUrl,
-        headers: {
-          'Accept': '*/*',
-          'Cookie': 'refreshToken=$refreshToken',
-        },
-      ));
+      final dio = Dio(
+        BaseOptions(
+          baseUrl: _dio.options.baseUrl,
+          headers: {'Accept': '*/*', 'Cookie': 'X-Refresh-Token=$refreshToken'},
+        ),
+      );
 
       final response = await dio.post(ApiConstants.refresh);
 

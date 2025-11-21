@@ -1,8 +1,10 @@
-// Auth Wrapper  
+// Auth Wrapper
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers/providers.dart';
+
+import '../../_features/auth/screens/login_screen.dart';
 
 class AuthWrapper extends ConsumerWidget {
   const AuthWrapper({super.key});
@@ -13,11 +15,7 @@ class AuthWrapper extends ConsumerWidget {
 
     // Show splash screen during initialization
     if (authState.isInitializing) {
-      return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     // MFA verification required
@@ -41,17 +39,18 @@ class AuthWrapper extends ConsumerWidget {
             final profile = snapshot.data!;
 
             // Check if email is verified
-            if (!profile.userAudit.emailVerified) {
+            if (!profile.audit.isEmailVerified) {
               return const EmailVerificationScreen();
             }
 
             // Check if user needs onboarding
-            if (!profile.userAudit.onboarded) {
+            if (!profile.audit.isOnboarded) {
               return const OnboardingScreen();
             }
 
             // Check if account is active
-            if (!profile.userAudit.accountActive || profile.userAudit.accountLocked) {
+            if (!profile.audit.isAccountActive ||
+                profile.audit.isAccountLocked) {
               return const AccountSuspendedScreen();
             }
 
@@ -60,14 +59,16 @@ class AuthWrapper extends ConsumerWidget {
           }
 
           // Error fetching profile, logout and show login
-          Future.microtask(() => ref.read(authControllerProvider.notifier).logout());
-          return const LoginScreen();
+          Future.microtask(
+            () => ref.read(authControllerProvider.notifier).logout(),
+          );
+          return const LoginScreenComplete();
         },
       );
     }
 
     // User is not authenticated
-    return const LoginScreen();
+    return const LoginScreenComplete();
   }
 }
 
@@ -75,35 +76,42 @@ class AuthWrapper extends ConsumerWidget {
 class MfaVerificationScreen extends StatelessWidget {
   const MfaVerificationScreen({super.key});
   @override
-  Widget build(BuildContext context) => const Scaffold(body: Center(child: Text('MFA Screen')));
+  Widget build(BuildContext context) =>
+      const Scaffold(body: Center(child: Text('MFA Screen')));
 }
 
 class EmailVerificationScreen extends StatelessWidget {
   const EmailVerificationScreen({super.key});
   @override
-  Widget build(BuildContext context) => const Scaffold(body: Center(child: Text('Email Verification Screen')));
+  Widget build(BuildContext context) =>
+      const Scaffold(body: Center(child: Text('Email Verification Screen')));
 }
 
 class OnboardingScreen extends StatelessWidget {
   const OnboardingScreen({super.key});
   @override
-  Widget build(BuildContext context) => const Scaffold(body: Center(child: Text('Onboarding Screen')));
+  Widget build(BuildContext context) =>
+      const Scaffold(body: Center(child: Text('Onboarding Screen')));
 }
 
 class AccountSuspendedScreen extends StatelessWidget {
   const AccountSuspendedScreen({super.key});
   @override
-  Widget build(BuildContext context) => const Scaffold(body: Center(child: Text('Account Suspended')));
+  Widget build(BuildContext context) =>
+      const Scaffold(body: Center(child: Text('Account Suspended')));
 }
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
   @override
-  Widget build(BuildContext context) => const Scaffold(body: Center(child: Text('Home Screen')));
+  Widget build(BuildContext context) =>
+      const Scaffold(body: Center(child: Text('Home Screen')));
 }
 
+/*
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
   @override
   Widget build(BuildContext context) => const Scaffold(body: Center(child: Text('Login Screen')));
 }
+ */

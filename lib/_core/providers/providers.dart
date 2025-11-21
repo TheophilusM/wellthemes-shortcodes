@@ -17,9 +17,7 @@ import '../../_features/auth/models/jwt_user.dart';
 // Infrastructure Providers
 final secureStorageProvider = Provider<FlutterSecureStorage>((ref) {
   return const FlutterSecureStorage(
-    aOptions: AndroidOptions(
-      encryptedSharedPreferences: true,
-    ),
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
   );
 });
 
@@ -49,15 +47,14 @@ final deviceInfoServiceProvider = Provider<DeviceInfoService>((ref) {
 
 // Network Providers
 final dioProvider = Provider<Dio>((ref) {
-  final dio = Dio(BaseOptions(
-    baseUrl: ref.watch(baseUrlProvider),
-    connectTimeout: const Duration(seconds: 30),
-    receiveTimeout: const Duration(seconds: 30),
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': '*/*',
-    },
-  ));
+  final dio = Dio(
+    BaseOptions(
+      baseUrl: ref.watch(baseUrlProvider),
+      connectTimeout: const Duration(seconds: 60),
+      receiveTimeout: const Duration(seconds: 60),
+      headers: {'Content-Type': 'application/json', 'Accept': '*/*'},
+    ),
+  );
 
   dio.interceptors.add(
     ApiInterceptor(

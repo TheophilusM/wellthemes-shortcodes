@@ -2,25 +2,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
 
 import '../../../_core/constants/storage_keys.dart';
+import '../../../_core/providers/providers.dart';
 import '../../../_core/services/storage_service.dart';
 import '../../../_core/services/token_manager.dart';
 import '../models/auth_request.dart';
 import '../models/auth_state.dart';
 import '../models/user_profile.dart';
 import '../services/auth_service.dart';
-
-// Provider definitions for dependencies
-final authServiceProvider = Provider<AuthService>((ref) {
-  throw UnimplementedError('Override this provider');
-});
-
-final tokenManagerProvider = Provider<TokenManager>((ref) {
-  throw UnimplementedError('Override this provider');
-});
-
-final storageServiceProvider = Provider<StorageService>((ref) {
-  throw UnimplementedError('Override this provider');
-});
 
 // Main AuthController provider
 final authControllerProvider = NotifierProvider<AuthController, AuthState>(
@@ -29,8 +17,6 @@ final authControllerProvider = NotifierProvider<AuthController, AuthState>(
 
 class AuthController extends Notifier<AuthState> {
   final Logger _logger = Logger();
-
-  // Late initialized dependencies - set in build()
   late final AuthService _authService;
   late final TokenManager _tokenManager;
   late final StorageService _storageService;

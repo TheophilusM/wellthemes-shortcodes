@@ -1,4 +1,4 @@
-// Auth Service  
+// Auth Service
 import 'package:logger/logger.dart';
 import '../../../_core/network/api_client.dart';
 import '../../../_core/constants/api_constants.dart';
@@ -93,6 +93,7 @@ class AuthService {
   Future<UserProfile> getProfile() async {
     _logger.d('Fetching user profile');
     final response = await _apiClient.get(ApiConstants.profile);
+    _logger.i(response.data);
     return UserProfile.fromJson(response.data);
   }
 }
