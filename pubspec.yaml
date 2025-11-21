@@ -38,14 +38,17 @@ dependencies:
   cupertino_icons: ^1.0.8
   google_fonts: ^6.3.2
   flutter_launcher_icons: ^0.14.4
+  flutter_native_splash: ^2.4.7
+  cached_network_image: ^3.4.1
 
   # Utilities
   uuid: ^4.5.2
   logger: ^2.6.2
-  freezed_annotation: ^3.1.0
   json_annotation: ^4.9.0
-  cached_network_image: ^3.4.1
-  flutter_native_splash: ^2.4.7
+
+  # >> flutter pub run build_runner build
+  # >> flutter pub run build_runner watch
+  freezed_annotation: ^3.1.0
 
 dev_dependencies:
   flutter_test:
@@ -58,19 +61,23 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
-# >>flutter pub run flutter_launcher_icons
-#flutter_launcher_icons:
-#  android: true
-#  ios: true
-#  image_path: "lib/assets/icons/app_icon_foreground.png"
-#  adaptive_icon_background: "#005F8D"
-#  adaptive_icon_foreground: "lib/assets/icons/app_icon_min.png"
+# >> flutter pub run flutter_launcher_icons
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "lib/assets/icons/app_icon_foreground.png"
+  adaptive_icon_background: "#005F8D"
+  adaptive_icon_foreground: "lib/assets/icons/app_icon_min.png"
 
 # >> flutter pub run flutter_native_splash:create
 flutter_native_splash:
   color: "#005F8D"
-  # background_image: "assets/splash_background.png"
-  image: "lib/assets/icons/app_icon_foreground.png"
-  image_android: "lib/assets/icons/app_icon_foreground.png"
-  image_ios: "lib/assets/icons/app_icon_foreground.png"
-  # android_disable_fullscreen: true
+  image: "lib/assets/icons/app_icon_small.png"
+  # Android specific
+  android: true
+  android_12:
+    color: "#005F8D"
+    image: "lib/assets/icons/app_icon_small.png"
+  # iOS specific
+  ios: true
+  fullscreen: true

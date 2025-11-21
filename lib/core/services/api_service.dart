@@ -1,12 +1,13 @@
-// lib/core/services/api_service.dart
-import 'package:wellth/core/constants/app_constants.dart';
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
-import 'storage_service.dart';
+import 'package:wellth/core/constants/app_constants.dart';
+
 import 'device_info_service.dart';
+import 'storage_service.dart';
 
 class ApiService {
   late Dio _dio;
+
   final StorageService _storageService;
   final DeviceInfoService _deviceInfoService;
   final Logger _logger = Logger();

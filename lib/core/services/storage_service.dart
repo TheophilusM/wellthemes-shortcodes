@@ -5,7 +5,32 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class StorageService {
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
+
+  static const _keyRefreshToken = '_rt';
+
   late SharedPreferences _prefs;
+
+  // Refresh Token Logic
+  Future<void> saveRefreshToken(String token) async {
+    await _secureStorage.write(
+      key: _keyRefreshToken,
+      value: token,
+      iOptions: const IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+      aOptions: const AndroidOptions(encryptedSharedPreferences: true),
+    );
+  }
+  Future<String?> getRefreshToken() async {
+    return await _secureStorage.read(key: _keyRefreshToken);
+  }
+
+  Future<String?> getAccessToken() async {
+    return await readSecure(StorageKeys.accessToken);
+  }
+
+  Future<void> deleteAll() async {
+    await _secureStorage.deleteAll();
+  }
+
 
   Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();
@@ -61,14 +86,6 @@ class StorageService {
   }) async {
     await writeSecure(StorageKeys.accessToken, accessToken);
     await writeSecure(StorageKeys.refreshToken, refreshToken);
-  }
-
-  Future<String?> getAccessToken() async {
-    return await readSecure(StorageKeys.accessToken);
-  }
-
-  Future<String?> getRefreshToken() async {
-    return await readSecure(StorageKeys.refreshToken);
   }
 
   Future<void> clearTokens() async {
